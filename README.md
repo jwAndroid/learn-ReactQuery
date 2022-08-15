@@ -1,1 +1,2 @@
-- [React Native](https://reactnative.dev)
+- React-Query
+- strapi server
