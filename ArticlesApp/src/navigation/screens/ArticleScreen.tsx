@@ -4,15 +4,20 @@ import {
   ActivityIndicator,
   FlatList,
 } from 'react-native';
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { RouteProp, useRoute } from '@react-navigation/core';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types';
 import { getArticle } from '../../api/articles';
-import { getComments } from '../../api/comments';
-import { ArticleView, CommentItem } from '../../components';
+import { deleteComment, getComments } from '../../api/comments';
+import {
+  ArticleView,
+  CommentInput,
+  CommentItem,
+} from '../../components';
 import { useUserState } from '../../contexts/UserContext';
+import { Comment } from '../../api/type';
 
 const styles = StyleSheet.create({
   spinner: {
@@ -39,6 +44,8 @@ function ArticleScreen() {
 
   const { bottom } = useSafeAreaInsets();
 
+  const queryClient = useQueryClient();
+
   const articleQuery = useQuery(['article', id], () =>
     getArticle(id),
   );
@@ -60,6 +67,10 @@ function ArticleScreen() {
   const { title, body, published_at, user } = articleQuery.data;
   const isMyArticle = currentUser?.id === user.id;
 
+  const onRemove = () => {};
+
+  const onModify = () => {};
+
   return (
     <FlatList
       style={styles.flatList}
@@ -74,18 +85,24 @@ function ArticleScreen() {
           message={item.message}
           publishedAt={item.published_at}
           username={item.user.username}
+          onRemove={onRemove}
+          onModify={onModify}
+          isMyComment={item.user.id === currentUser?.id}
         />
       )}
       keyExtractor={(item) => item.id.toString()}
       ListHeaderComponent={() => (
-        <ArticleView
-          title={title}
-          body={body}
-          publishedAt={published_at}
-          username={user.username}
-          id={id}
-          isMyArticle={isMyArticle}
-        />
+        <>
+          <ArticleView
+            title={title}
+            body={body}
+            publishedAt={published_at}
+            username={user.username}
+            id={id}
+            isMyArticle={isMyArticle}
+          />
+          <CommentInput articleId={id} />
+        </>
       )}
     />
   );
