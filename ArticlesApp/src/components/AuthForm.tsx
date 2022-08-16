@@ -8,6 +8,8 @@ import {
   TextInput,
   KeyboardAvoidingView,
 } from 'react-native';
+import useLogin from '../hooks/useLogin';
+import useRegister from '../hooks/useRegister';
 
 export interface AuthFormProps {
   isRegister?: boolean;
@@ -18,6 +20,32 @@ function AuthForm({ isRegister }: AuthFormProps) {
   const [username, setUsername] = useState('');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+
+  const { mutate: login, isLoading: loginLoading } = useLogin();
+
+  const { mutate: register, isLoading: registerLoading } =
+    useRegister();
+
+  const isLoading = loginLoading || registerLoading;
+
+  const onPress = () => {
+    if (isLoading) {
+      return null;
+    }
+
+    if (isRegister) {
+      register({
+        email,
+        username,
+        password,
+      });
+    } else {
+      login({
+        identifier,
+        password,
+      });
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -68,6 +96,7 @@ function AuthForm({ isRegister }: AuthFormProps) {
                 styles.submitPressed,
             ]}
             android_ripple={{ color: '#42a5f5' }}
+            onPress={onPress}
           >
             <Text style={styles.submitText}>
               {isRegister ? '회원가입' : '로그인'}

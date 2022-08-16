@@ -9,11 +9,14 @@ import {
   MyArticlesScreen,
   RegisterScreen,
 } from './screens';
+import useAuthLoadEffect from '../hooks/useAuthLoadEffect';
 
 const { Navigator, Screen } =
   createNativeStackNavigator<RootStackParamList>();
 
 function RootStack() {
+  useAuthLoadEffect();
+
   return (
     <Navigator screenOptions={{ headerBackTitle: '닫기' }}>
       <Screen

@@ -40,5 +40,6 @@ module.exports = {
     'function-paren-newline': 'off',
     camelcase: 'off',
     'react/require-default-props': 'off',
+    'consistent-return': 'off',
   },
 };
