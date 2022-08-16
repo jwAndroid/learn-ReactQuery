@@ -8,7 +8,11 @@ import {
   Platform,
   Pressable,
 } from 'react-native';
-import { useMutation, useQueryClient } from 'react-query';
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from 'react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -61,20 +65,30 @@ function WriteScreen() {
   // notion: react-query
   const { mutate: write } = useMutation(writeArticle, {
     onSuccess: (article) => {
-      // queryClient.invalidateQueries('articles');
+      queryClient.setQueryData<InfiniteData<Article[]>>(
+        'articles',
+        (data) => {
+          if (!data) {
+            return {
+              pageParams: [undefined],
+              pages: [[article]],
+            };
+          }
+          const [firstPage, ...rest] = data.pages;
 
-      // const articles =
-      //   queryClient.getQueryData<Article[]>('articles') ?? [];
+          return {
+            ...data,
 
-      // queryClient.setQueryData('articles', articles.concat(article));
-
-      queryClient.setQueryData<Article[]>('articles', (articles) =>
-        (articles ?? []).concat(article),
+            pages: [[article, ...firstPage], ...rest],
+          };
+        },
       );
 
       navigation.goBack();
     },
   });
+  // 페이지네이션을 추가했을때 쓰고나서 당연히 이전 스크린에 업데이트 되어야한다.
+  // 해당하는 작업을 위에서 처리해준건데 .. 번거롭기때문에 invalidate 하여 재요청하는게 더 편할수있다.
 
   const onSubmit = useCallback(() => {
     write({ title, body });

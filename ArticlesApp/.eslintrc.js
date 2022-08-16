@@ -43,5 +43,6 @@ module.exports = {
     'consistent-return': 'off',
     'no-confusing-arrow': 'off',
     'react/jsx-curly-newline': 'off',
+    'react/jsx-wrap-multilines': 'off',
   },
 };
