@@ -39,5 +39,6 @@ module.exports = {
     'implicit-arrow-linebreak': 'off',
     'function-paren-newline': 'off',
     camelcase: 'off',
+    'react/require-default-props': 'off',
   },
 };

@@ -1,12 +1,9 @@
-import { View, Text } from 'react-native';
 import React from 'react';
 
+import { AuthForm } from '../../components';
+
 function RegisterScreen() {
-  return (
-    <View>
-      <Text>RegisterScreen</Text>
-    </View>
-  );
+  return <AuthForm isRegister />;
 }
 
 export default RegisterScreen;
