@@ -12,3 +12,12 @@ export async function getArticle(id: number) {
 
   return response.data;
 }
+
+export async function writeArticle(params: {
+  title: string;
+  body: string;
+}) {
+  const response = await client.post<Article>('/articles', params);
+
+  return response.data;
+}

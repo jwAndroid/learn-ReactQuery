@@ -8,10 +8,13 @@ import {
   Platform,
   Pressable,
 } from 'react-native';
+import { useMutation, useQueryClient } from 'react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+import { writeArticle } from '../../api/articles';
 import { RootStackNavigationProp } from '../types';
+import { Article } from '../../api/type';
 
 const styles = StyleSheet.create({
   block: {
@@ -53,9 +56,29 @@ function WriteScreen() {
 
   const navigation = useNavigation<RootStackNavigationProp>();
 
+  const queryClient = useQueryClient();
+
+  // notion: react-query
+  const { mutate: write } = useMutation(writeArticle, {
+    onSuccess: (article) => {
+      // queryClient.invalidateQueries('articles');
+
+      // const articles =
+      //   queryClient.getQueryData<Article[]>('articles') ?? [];
+
+      // queryClient.setQueryData('articles', articles.concat(article));
+
+      queryClient.setQueryData<Article[]>('articles', (articles) =>
+        (articles ?? []).concat(article),
+      );
+
+      navigation.goBack();
+    },
+  });
+
   const onSubmit = useCallback(() => {
-    console.log('submit');
-  }, []);
+    write({ title, body });
+  }, [body, title, write]);
 
   useEffect(() => {
     navigation.setOptions({
