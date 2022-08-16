@@ -41,5 +41,7 @@ module.exports = {
     camelcase: 'off',
     'react/require-default-props': 'off',
     'consistent-return': 'off',
+    'no-confusing-arrow': 'off',
+    'react/jsx-curly-newline': 'off',
   },
 };

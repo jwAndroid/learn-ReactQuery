@@ -8,6 +8,7 @@ import {
   LoginScreen,
   MyArticlesScreen,
   RegisterScreen,
+  WriteScreen,
 } from './screens';
 import useAuthLoadEffect from '../hooks/useAuthLoadEffect';
 
@@ -44,6 +45,11 @@ function RootStack() {
         name="Article"
         component={ArticleScreen}
         options={{ title: '게시글' }}
+      />
+      <Screen
+        name="Write"
+        component={WriteScreen}
+        options={{ title: '새 게시글 작성' }}
       />
     </Navigator>
   );

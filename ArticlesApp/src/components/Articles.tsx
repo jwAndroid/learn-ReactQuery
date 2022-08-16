@@ -3,6 +3,7 @@ import { View, StyleSheet, FlatList } from 'react-native';
 
 import { Article } from '../api/type';
 import ArticleItem from './ArticleItem';
+import WriteButton from './WriteButton';
 
 const styles = StyleSheet.create({
   list: {
@@ -17,9 +18,10 @@ const styles = StyleSheet.create({
 
 export interface ArticlesProps {
   articles: Article[];
+  showWriteButton: boolean;
 }
 
-function Articles({ articles }: ArticlesProps) {
+function Articles({ articles, showWriteButton }: ArticlesProps) {
   return (
     <FlatList
       data={articles}
@@ -34,6 +36,9 @@ function Articles({ articles }: ArticlesProps) {
       keyExtractor={(item) => item.id.toString()}
       style={styles.list}
       ItemSeparatorComponent={() => <View style={styles.separator} />}
+      ListHeaderComponent={() =>
+        showWriteButton ? <WriteButton /> : null
+      }
       ListFooterComponent={() => <View style={styles.separator} />}
     />
   );
