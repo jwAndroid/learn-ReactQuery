@@ -36,3 +36,23 @@ export async function writeArticle(params: {
 
   return response.data;
 }
+
+export async function modifyArticle(params: {
+  id: number;
+  title: string;
+  body: string;
+}) {
+  const { id, title, body } = params;
+  const response = await client.put<Article>(`/articles/${id}`, {
+    title,
+    body,
+  });
+
+  return response.data;
+}
+
+export async function deleteArticle(id: number) {
+  await client.delete<Article>(`/articles/${id}`);
+
+  return null; // 응답 결과가 없기 때문에 null 반환
+}

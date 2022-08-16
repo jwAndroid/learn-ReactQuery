@@ -12,6 +12,7 @@ import { RootStackParamList } from '../types';
 import { getArticle } from '../../api/articles';
 import { getComments } from '../../api/comments';
 import { ArticleView, CommentItem } from '../../components';
+import { useUserState } from '../../contexts/UserContext';
 
 const styles = StyleSheet.create({
   spinner: {
@@ -34,6 +35,7 @@ type ArticleScreenRouteProp = RouteProp<
 function ArticleScreen() {
   const { params } = useRoute<ArticleScreenRouteProp>();
   const { id } = params;
+  const [currentUser] = useUserState();
 
   const { bottom } = useSafeAreaInsets();
 
@@ -56,6 +58,7 @@ function ArticleScreen() {
   }
 
   const { title, body, published_at, user } = articleQuery.data;
+  const isMyArticle = currentUser?.id === user.id;
 
   return (
     <FlatList
@@ -80,6 +83,8 @@ function ArticleScreen() {
           body={body}
           publishedAt={published_at}
           username={user.username}
+          id={id}
+          isMyArticle={isMyArticle}
         />
       )}
     />

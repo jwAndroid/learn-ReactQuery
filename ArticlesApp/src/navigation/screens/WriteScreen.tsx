@@ -1,5 +1,14 @@
-import { useNavigation } from '@react-navigation/core';
-import React, { useCallback, useEffect, useState } from 'react';
+import {
+  RouteProp,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/core';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -16,8 +25,11 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import { writeArticle } from '../../api/articles';
-import { RootStackNavigationProp } from '../types';
+import { modifyArticle, writeArticle } from '../../api/articles';
+import {
+  RootStackNavigationProp,
+  RootStackParamList,
+} from '../types';
 import { Article } from '../../api/type';
 
 const styles = StyleSheet.create({
@@ -53,14 +65,29 @@ const styles = StyleSheet.create({
   },
 });
 
+type WriteScreenRouteProp = RouteProp<RootStackParamList, 'Write'>;
+
 function WriteScreen() {
-  const { top } = useSafeAreaInsets();
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
+  const { params } = useRoute<WriteScreenRouteProp>();
 
   const navigation = useNavigation<RootStackNavigationProp>();
 
   const queryClient = useQueryClient();
+
+  const cachedArticle = useMemo(
+    () =>
+      params.articleId
+        ? queryClient.getQueryData<Article>([
+            'article',
+            params.articleId,
+          ])
+        : null,
+    [queryClient, params.articleId],
+  );
+
+  const { top } = useSafeAreaInsets();
+  const [title, setTitle] = useState(cachedArticle?.title ?? '');
+  const [body, setBody] = useState(cachedArticle?.body ?? '');
 
   // notion: react-query
   const { mutate: write } = useMutation(writeArticle, {
@@ -90,9 +117,44 @@ function WriteScreen() {
   // 페이지네이션을 추가했을때 쓰고나서 당연히 이전 스크린에 업데이트 되어야한다.
   // 해당하는 작업을 위에서 처리해준건데 .. 번거롭기때문에 invalidate 하여 재요청하는게 더 편할수있다.
 
+  const { mutate: modify } = useMutation(modifyArticle, {
+    onSuccess: (article) => {
+      queryClient.setQueryData<InfiniteData<Article[]>>(
+        'articles',
+        (data) => {
+          if (!data) {
+            return { pageParams: [], pages: [] };
+          }
+
+          return {
+            pageParams: data!.pageParams,
+            pages: data!.pages.map((page) =>
+              page.find((a) => a.id === params.articleId)
+                ? page.map((a) =>
+                    a.id === params.articleId ? article : a,
+                  )
+                : page,
+            ),
+          };
+        },
+      );
+
+      queryClient.setQueryData(
+        ['article', params.articleId],
+        article,
+      );
+
+      navigation.goBack();
+    },
+  });
+
   const onSubmit = useCallback(() => {
-    write({ title, body });
-  }, [body, title, write]);
+    if (params.articleId) {
+      modify({ id: params.articleId, title, body });
+    } else {
+      write({ title, body });
+    }
+  }, [body, modify, params.articleId, title, write]);
 
   useEffect(() => {
     navigation.setOptions({
