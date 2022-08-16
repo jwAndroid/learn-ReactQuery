@@ -36,5 +36,6 @@ export type RootStackParamList = {
     articleId?: number;
   };
 };
+
 export type RootStackNavigationProp =
   NativeStackNavigationProp<RootStackParamList>;

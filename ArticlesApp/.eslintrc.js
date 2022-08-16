@@ -34,5 +34,10 @@ module.exports = {
     'operator-linebreak': 'off',
     'react/no-unstable-nested-components': 'off',
     'no-console': 'off',
+    'import/prefer-default-export': 'off',
+    'object-curly-newline': 'off',
+    'implicit-arrow-linebreak': 'off',
+    'function-paren-newline': 'off',
+    camelcase: 'off',
   },
 };
