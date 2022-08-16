@@ -1,2 +1,3 @@
 - React-Query
 - strapi server
+- simple posting app
