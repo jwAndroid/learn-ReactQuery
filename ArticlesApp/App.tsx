@@ -3,15 +3,20 @@
  */
 
 import React, { memo } from 'react';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { RootStack } from './src/navigation';
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <NavigationContainer>
-      <RootStack />
-    </NavigationContainer>
+    <QueryClientProvider client={queryClient}>
+      <NavigationContainer>
+        <RootStack />
+      </NavigationContainer>
+    </QueryClientProvider>
   );
 }
 

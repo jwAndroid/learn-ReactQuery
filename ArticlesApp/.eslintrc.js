@@ -33,5 +33,6 @@ module.exports = {
     'no-use-before-define': 'off',
     'operator-linebreak': 'off',
     'react/no-unstable-nested-components': 'off',
+    'no-console': 'off',
   },
 };
