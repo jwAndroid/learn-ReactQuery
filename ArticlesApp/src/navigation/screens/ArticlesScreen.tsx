@@ -1,8 +1,9 @@
-import React, { memo } from 'react';
+import React, { memo, useMemo } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
-import { useQuery } from 'react-query';
+import { useInfiniteQuery } from 'react-query';
 
 import { getArticles } from '../../api/articles';
+import { Article } from '../../api/type';
 import { Articles } from '../../components';
 import { useUserState } from '../../contexts/UserContext';
 
@@ -13,15 +14,43 @@ const styles = StyleSheet.create({
 });
 
 function ArticlesScreen() {
-  const { data } = useQuery('articles', getArticles);
+  // const { data } = useQuery('articles', getArticles);
+  // 그냥 불러올때
+
+  const { data, isFetchingNextPage, fetchNextPage } =
+    useInfiniteQuery(
+      'articles',
+      ({ pageParam }) => getArticles({ cursor: pageParam }),
+      {
+        getNextPageParam: (lastPage) =>
+          lastPage.length === 10
+            ? lastPage[lastPage.length - 1].id
+            : undefined,
+      },
+    );
+
+  const items = useMemo(() => {
+    if (!data) {
+      return null;
+    }
+
+    return ([] as Article[]).concat(...data.pages);
+  }, [data]);
 
   const [user] = useUserState();
 
-  if (!data) {
+  if (!items) {
     return <ActivityIndicator size="large" style={styles.spinner} />;
   }
 
-  return <Articles articles={data} showWriteButton={!!user} />;
+  return (
+    <Articles
+      articles={items}
+      showWriteButton={!!user}
+      isFetchingNextPage={isFetchingNextPage}
+      fetchNextPage={fetchNextPage}
+    />
+  );
 }
 
 export default memo(ArticlesScreen);
