@@ -30,5 +30,8 @@ module.exports = {
     'no-undef': 'off',
     'import/no-unresolved': 'off',
     'import/extensions': 'off',
+    'no-use-before-define': 'off',
+    'operator-linebreak': 'off',
+    'react/no-unstable-nested-components': 'off',
   },
 };
