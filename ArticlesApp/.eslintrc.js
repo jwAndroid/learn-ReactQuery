@@ -45,5 +45,6 @@ module.exports = {
     'react/jsx-curly-newline': 'off',
     'react/jsx-wrap-multilines': 'off',
     indent: 'off',
+    'react-hooks/rules-of-hooks': 'off',
   },
 };

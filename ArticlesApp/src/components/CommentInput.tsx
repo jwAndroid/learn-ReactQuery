@@ -32,7 +32,6 @@ function CommentInput({ articleId }: CommentInputProps) {
   const [writingComment, setWritingComment] = useState(false);
 
   const queryClient = useQueryClient();
-
   const { mutate } = useMutation(writeComment, {
     onSuccess: (comment) => {
       queryClient.setQueryData<Comment[]>(

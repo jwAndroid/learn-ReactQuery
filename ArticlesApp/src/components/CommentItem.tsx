@@ -22,8 +22,6 @@ function CommentItem({
 }: CommentItemProps) {
   const formattedDate = new Date(publishedAt).toDateString();
 
-  console.log(id);
-
   const handleRemove = () => onRemove(id);
   const handleModify = () => onModify(id);
 
