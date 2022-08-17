@@ -10,11 +10,16 @@ import { RouteProp, useRoute } from '@react-navigation/core';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types';
 import { getArticle } from '../../api/articles';
-import { deleteComment, getComments } from '../../api/comments';
+import {
+  deleteComment,
+  getComments,
+  modifyComment,
+} from '../../api/comments';
 import {
   ArticleView,
   CommentInput,
   CommentItem,
+  CommentModal,
 } from '../../components';
 import { useUserState } from '../../contexts/UserContext';
 import { Comment } from '../../api/type';
@@ -45,6 +50,8 @@ function ArticleScreen() {
 
   const [askRemoveComment, setAskRemoveComment] = useState(false);
 
+  const [modifying, setModifying] = useState(false);
+
   const queryClient = useQueryClient();
 
   const { params } = useRoute<ArticleScreenRouteProp>();
@@ -73,12 +80,39 @@ function ArticleScreen() {
     },
   });
 
+  const { mutate: modify } = useMutation(modifyComment, {
+    // mutate 함수를 modify 로 치환, modifyComment api 시작
+    onSuccess: (comment) => {
+      // modifyComment 가 성공했을때 성공한 반환 파라미터 comment
+      queryClient.setQueryData<Comment[]>(
+        // 쿼리 인스턴스의 <Comment[]> 타입의 setQueryData에서
+        ['comments', id],
+        // 캐시키가 comments , api 파라미터 id(게시글아이디) === 게시글의 모든 댓글조회
+        (comments) =>
+          // comments 모든 댓글에서
+          comments
+            ? comments.map((c) =>
+                c.id === selectedCommentId ? comment : c,
+              )
+            : // 순회하여 선택한 아이디가 맞다면 comment 를하고 그외 나머지 그대로 새로운 배열 내뱉음.
+              [],
+        // 게시글에 댓글이 없으면 빈배열 내뱉음
+      );
+    },
+  });
+
   const articleQuery = useQuery(['article', id], () =>
     getArticle(id),
   );
 
-  const commentsQuery = useQuery(['comments', id], () =>
-    getComments(id),
+  const commentsQuery = useQuery(
+    ['comments', id],
+    () => getComments(id),
+    // id 는 특정 게시글의 아이디 이다.
+  );
+
+  const selectedComment = commentsQuery.data?.find(
+    (comment) => comment.id === selectedCommentId,
   );
 
   if (!articleQuery.data || !commentsQuery.data) {
@@ -100,7 +134,17 @@ function ArticleScreen() {
   };
 
   const onModify = (commentId: number) => {
-    setAskRemoveComment(true);
+    setSelectedCommentId(commentId);
+    setModifying(true);
+  };
+
+  const onSubmitModify = (message: string) => {
+    setModifying(false);
+    modify({
+      id: selectedCommentId!,
+      articleId: id,
+      message,
+    });
   };
 
   const onConfirmRemove = () => {
@@ -156,6 +200,12 @@ function ArticleScreen() {
         confirmText="삭제"
         onConfirm={onConfirmRemove}
         onClose={onCancelRemove}
+      />
+      <CommentModal
+        visible={modifying}
+        initialMessage={selectedComment?.message}
+        onClose={onCancelRemove}
+        onSubmit={onSubmitModify}
       />
     </>
   );
