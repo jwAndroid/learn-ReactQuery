@@ -1,24 +1,44 @@
-import React, { memo } from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import MaterialIcons from 'react-native-vector-icons/FontAwesome';
+import React, { memo, useCallback, useMemo } from 'react';
+import {
+  BottomTabNavigationOptions,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import { MainTabParamList } from './types';
+import { MainTabParamList, RootStackNavigationProp } from './types';
 import { BinScreen, FavoritScreen, TodoScreen } from './screens';
+import { Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const { Navigator, Screen } = createBottomTabNavigator<MainTabParamList>();
 
-// https://oblador.github.io/react-native-vector-icons/
-
 function MainTab() {
+  const navigation = useNavigation<RootStackNavigationProp>();
+
+  const onPressSettings = useCallback(() => {
+    navigation.navigate('Setting');
+  }, []);
+
+  const screenOptions = useMemo<BottomTabNavigationOptions>(
+    () => ({
+      headerRight: () => (
+        <Pressable style={{ marginRight: 10 }} onPress={onPressSettings}>
+          <MaterialIcons name="settings" size={25} />
+        </Pressable>
+      ),
+    }),
+    [],
+  );
+
   return (
-    <Navigator>
+    <Navigator screenOptions={screenOptions}>
       <Screen
         name="Todo"
         component={TodoScreen}
         options={{
           title: 'Todo',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="folder-o" color={color} size={size} />
+            <MaterialIcons name="article" color={color} size={size} />
           ),
         }}
       />
@@ -28,7 +48,7 @@ function MainTab() {
         component={FavoritScreen}
         options={{
           title: 'Favorit',
-          tabBarIcon: ({ color, size }) => <MaterialIcons name="user" color={color} size={size} />,
+          tabBarIcon: ({ color, size }) => <MaterialIcons name="grade" color={color} size={size} />,
         }}
       />
 
@@ -38,7 +58,7 @@ function MainTab() {
         options={{
           title: 'Bin',
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="bitbucket" color={color} size={size} />
+            <MaterialIcons name="delete" color={color} size={size} />
           ),
         }}
       />

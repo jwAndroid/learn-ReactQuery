@@ -1,9 +1,5 @@
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import {
-  CompositeNavigationProp,
-  NavigatorScreenParams,
-  RouteProp,
-} from '@react-navigation/core';
+import { CompositeNavigationProp, NavigatorScreenParams, RouteProp } from '@react-navigation/core';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 /* MainTab */
@@ -13,22 +9,18 @@ export type MainTabParamList = {
   Bin: undefined;
 };
 
-export type MainTabNavigationScreenParams =
-  NavigatorScreenParams<MainTabParamList>;
+export type MainTabNavigationScreenParams = NavigatorScreenParams<MainTabParamList>;
 
 export type MainTabNavigationProp = CompositeNavigationProp<
   RootStackNavigationProp,
   BottomTabNavigationProp<MainTabParamList>
 >;
-export type MainTabRouteProp = RouteProp<
-  RootStackParamList,
-  'MainTab'
->;
+export type MainTabRouteProp = RouteProp<RootStackParamList, 'MainTab'>;
 
 /* RootStack */
 export type RootStackParamList = {
   MainTab: MainTabNavigationScreenParams;
+  Setting: undefined;
 };
 
-export type RootStackNavigationProp =
-  NativeStackNavigationProp<RootStackParamList>;
+export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
