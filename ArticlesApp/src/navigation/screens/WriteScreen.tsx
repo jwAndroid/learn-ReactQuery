@@ -89,7 +89,6 @@ function WriteScreen() {
   const [title, setTitle] = useState(cachedArticle?.title ?? '');
   const [body, setBody] = useState(cachedArticle?.body ?? '');
 
-  // notion: react-query
   const { mutate: write } = useMutation(writeArticle, {
     onSuccess: (article) => {
       queryClient.setQueryData<InfiniteData<Article[]>>(
